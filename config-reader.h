@@ -2,8 +2,8 @@
 #define CONFIG_READER_H
 
 struct ParsedConfig {
-	char keyArr[50][50];
-	char valueArr[50][50];
+	char keyArr[500][50];
+	char valueArr[500][50];
 	int maxLines;
 	int count;
 };

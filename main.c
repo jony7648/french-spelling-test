@@ -44,7 +44,7 @@ double calculateGrade(int correctCount, int questionCount) {
 
 }
 
-int startTest(struct Lesson* lptr) {
+int startTest(struct ParsedConfig* lptr) {
 	double grade = 5.0f;
 
 	char wrongWords[100][50];
@@ -55,8 +55,8 @@ int startTest(struct Lesson* lptr) {
 	int wrongCount = 0;
 
 	for (int i=0; i<lptr->count; i++) {
-		char* engWord = lptr->engArr[i];
-		char* frenWord = lptr->frenArr[i];
+		char* engWord = lptr->keyArr[i];
+		char* frenWord = lptr->valueArr[i];
 
 		bool correct = promptWord(engWord, frenWord);
 
@@ -95,11 +95,19 @@ int startTest(struct Lesson* lptr) {
 }
 
 int main() {
-	struct Lesson* lesson = getLessonData("lesson1.txt");
+	//Write a function that if it's a normal alpha it fails but succeeds
+	//with walpha it has an offset of - 1 to account for it
 
-	//startTest(lesson);
+	//struct Lesson* lesson = getLessonData("lesson1.txt");
+
+	struct ParsedConfig* lesson = parseConfig("lesson1.txt");
 	
-	//struct ParsedConfig* cfgptr = parseConfig("lesson1.txt");
+	startTest(lesson);
+	
+
+	//printf("%s\n", cfgptr->valueArr[1]);
+
+	free(lesson);
 
 
 
