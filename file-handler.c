@@ -101,7 +101,7 @@ struct Lesson* getLessonData(char* filePath) {
 	return lptr;
 }
 
-void saveResults(char wrongWords[100][50], int correctCount, int wrongCount, double score) {
+void saveResults(char wrongWords[100][50], int correctCount, int wrongCount, int totalCount, double score) {
 	FILE* fptr;
 
 	time_t currentTime = time(NULL);
@@ -120,7 +120,7 @@ void saveResults(char wrongWords[100][50], int correctCount, int wrongCount, dou
 	fprintf(fptr, "\n%sscore %d/%d   Grade %f %c\n", 
 			ctime(&currentTime), 
 			correctCount, 
-			wrongCount,
+			totalCount,
 			score,
 			gradeLetter
 	);

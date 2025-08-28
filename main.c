@@ -37,7 +37,7 @@ bool promptWord(char* engWord, char frenWord[20]) {
 double calculateGrade(int correctCount, int questionCount) {
 	double grade;
 	
-	grade = (double)correctCount/ (double)questionCount;
+	grade = (double)correctCount/ (double)questionCount * 100;
 
 
 	return grade;
@@ -87,7 +87,7 @@ int startTest(struct ParsedConfig* lptr) {
 		printf("%d: %s", i+1, wrongWords[i]);
 	}
 
-	saveResults(wrongWords, correctCount, wrongCount, grade);
+	saveResults(wrongWords, correctCount, wrongCount, lptr->count, grade);
 
 	return grade;
 
@@ -101,11 +101,15 @@ int main() {
 	//struct Lesson* lesson = getLessonData("lesson1.txt");
 
 	struct ParsedConfig* lesson = parseConfig("lesson1.txt");
-	
-	startTest(lesson);
-	
+	struct ParsedConfig* cfgptr = parseConfig("config.cfg");
 
-	//printf("%s\n", cfgptr->valueArr[1]);
+
+	//if (strcmp(cfgptr->
+
+
+	
+	free(cfgptr);
+	startTest(lesson);
 
 	free(lesson);
 

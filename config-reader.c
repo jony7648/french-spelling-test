@@ -6,6 +6,35 @@
 #include <wctype.h>
 #include "config-reader.h"
 
+char* getConfigValue(char* key, struct ParsedConfig* cfgptr) {
+	for (int i=0; i<cfgptr->count; i++) {
+		if (strcmp(cfgptr->keyArr[i], key) == 0) {
+			return cfgptr->valueArr[i];
+		}
+	}
+	return NULL;
+}
+/*
+char* getConfigKey(char* value, int maxCount, struct ParsedConfig* cfgptr) {
+	int retIndex = 0;
+
+	char* retArr
+
+	for (int i=0; i<cfgptr->count; i++) {
+		if (retIndex >= maxCount) {
+			break;
+		}
+
+		if (strcmp(cfgptr->valueArr[i], value) == 0) {
+			//printf("%s\n", cfgptr->keyArr[i]);
+			strcpy(retArr[retIndex], cfgptr->keyArr[i]);
+			retIndex++;
+		}
+	}
+
+	return retIndex;
+}
+*/
 void parseLine(char* line, int key[50], int value[50]) {
 	char keyBuffer[50]; 
 	char valueBuffer[50];
@@ -90,3 +119,13 @@ struct ParsedConfig* parseConfig(char* path) {
 
 }
 
+/*
+int main() {
+	struct ParsedConfig* cfgptr = parseConfig("config.cfg");
+
+	char retArr[50][50];
+
+	free(cfgptr);
+
+}
+*/
