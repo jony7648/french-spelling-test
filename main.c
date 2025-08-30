@@ -34,18 +34,35 @@ bool promptWord(char* engWord, char frenWord[20]) {
 	return false;
 }
 
-double calculateGrade(int correctCount, int questionCount) {
-	double grade;
+float calculateGrade(int correctCount, int questionCount) {
+	float grade;
 	
-	grade = (double)correctCount/ (double)questionCount * 100;
+	grade = (float)correctCount/ (float)questionCount * 100;
 
 
 	return grade;
 
 }
 
+char getLetterGrade(float userGrade, char* letterGradePath) {
+	struct ParsedConfig* defPtr = parseConfig("letter-grades.cfg");
+
+	for (int i=0; i<defPtr->count; i++) {
+		char letterGrade = defPtr->keyArr[i][0];
+		int threshGrade = atoi(defPtr->valueArr[i]);
+
+		if (userGrade >= threshGrade) {
+			return letterGrade;
+		}
+
+
+	}
+
+	return 'F';
+}
+
 int startTest(struct ParsedConfig* lptr) {
-	double grade = 5.0f;
+	float grade = 5.0f;
 
 	char wrongWords[100][50];
 	int wrongWordsLen = 100;
@@ -95,23 +112,25 @@ int startTest(struct ParsedConfig* lptr) {
 }
 
 int main() {
-	//Write a function that if it's a normal alpha it fails but succeeds
-	//with walpha it has an offset of - 1 to account for it
-
-	//struct Lesson* lesson = getLessonData("lesson1.txt");
-
-	struct ParsedConfig* lesson = parseConfig("lesson1.txt");
 	struct ParsedConfig* cfgptr = parseConfig("config.cfg");
 
+	char* lessonPath = getConfigValue("lesson", cfgptr);
 
-	//if (strcmp(cfgptr->
+	struct ParsedConfig* lesson = parseConfig(lessonPath);
+
+	char letterGrade = getLetterGrade(80, "letter-grades.cfg");
+
+	printf("%c\n", letterGrade); 
 
 
+	//if strcmp(getConfigValue("lesson.txt", cfgptr), ")
 	
-	free(cfgptr);
+	//free(cfgptr);
 	startTest(lesson);
 
 	free(lesson);
+
+
 
 
 

@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include <ctype.h>
-#include <wctype.h>
 #include "config-reader.h"
 
 char* getConfigValue(char* key, struct ParsedConfig* cfgptr) {
@@ -12,7 +10,7 @@ char* getConfigValue(char* key, struct ParsedConfig* cfgptr) {
 			return cfgptr->valueArr[i];
 		}
 	}
-	return NULL;
+	return "  ";
 }
 /*
 char* getConfigKey(char* value, int maxCount, struct ParsedConfig* cfgptr) {
@@ -35,6 +33,15 @@ char* getConfigKey(char* value, int maxCount, struct ParsedConfig* cfgptr) {
 	return retIndex;
 }
 */
+
+int isVisibleChar(char test) {
+	if (test == ' ' || test == '\t' || test == '\n' || test == '\0') {
+		return 0;
+	}
+
+	return 1;
+}
+
 void parseLine(char* line, int key[50], int value[50]) {
 	char keyBuffer[50]; 
 	char valueBuffer[50];
@@ -57,20 +64,28 @@ void parseLine(char* line, int key[50], int value[50]) {
 	int loopCount = strlen(line) - startingIndex;
 	int indexOffset = 0;
 
+	bool foundValueStart = false;
+
+	
 	for (int i=0; i<loopCount; i++) {
 		int lineIndex = i + startingIndex;
 		int index = i - indexOffset;
+		char targetChar = line[lineIndex];
 
-		if (line[lineIndex] == '\n') {
+		if (targetChar == '\n') {
 			valueBuffer[index] = '\0';
 			break;
 		}
-		else if (line[lineIndex] == ' ' || line[lineIndex] == '\t') {
+		else if (isVisibleChar(targetChar) == true) {
+			foundValueStart = true;
+		}
+		else if (foundValueStart == false && isVisibleChar(targetChar) == false) {
 			indexOffset++;
-			continue;
 		}
 
-		valueBuffer[index] = line[lineIndex];
+
+		valueBuffer[index] = targetChar;
+
 	}
 
 	strcpy(key, keyBuffer);
@@ -124,8 +139,10 @@ int main() {
 	struct ParsedConfig* cfgptr = parseConfig("config.cfg");
 
 	char retArr[50][50];
+	
+
+	printf("%s\n", cfgptr->valueArr[0]);
 
 	free(cfgptr);
-
 }
 */
