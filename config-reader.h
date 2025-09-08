@@ -9,5 +9,6 @@ struct ParsedConfig {
 };
 
 extern struct ParsedConfig* parseConfig(char* path);
+extern char* getConfigValue(char* key, struct ParsedConfig* cfgptr);
 
 #endif

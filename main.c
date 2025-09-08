@@ -6,12 +6,14 @@
 #include "config-reader.h"
 
 bool promptWord(char* engWord, char frenWord[20]) {
-	char userBuffer[20];
-	userBuffer[19] = '\0';
-	
+	char userBuffer[100];
+	userBuffer[99] = '\0';
+
+	int maxUserLen = 100;
+
 	printf("English: %s\n\nFrench: ", engWord);
 
-	if (fgets(userBuffer, sizeof(userBuffer), stdin) != NULL) {
+	if (fgets(userBuffer, maxUserLen, stdin) != NULL) {
 		int len = strlen(userBuffer);	
 
 		if (len > 0 && userBuffer[len - 1] != '\n') {
@@ -22,10 +24,8 @@ bool promptWord(char* engWord, char frenWord[20]) {
 		}
 	}
 
-
 	strcat(frenWord, "\n");
 	printf("\n");
-
 
 	if (strcmp(userBuffer, frenWord) == 0) {
 		return true;
@@ -39,13 +39,16 @@ float calculateGrade(int correctCount, int questionCount) {
 	
 	grade = (float)correctCount/ (float)questionCount * 100;
 
-
 	return grade;
-
 }
 
-char getLetterGrade(float userGrade, char* letterGradePath) {
-	struct ParsedConfig* defPtr = parseConfig("letter-grades.cfg");
+char getLetterGrade(float userGrade, char* letterConfigPath) {
+	struct ParsedConfig* defPtr = parseConfig(letterConfigPath);
+
+	if (defPtr == NULL) {
+		return '\0';
+	}
+
 
 	for (int i=0; i<defPtr->count; i++) {
 		char letterGrade = defPtr->keyArr[i][0];
@@ -54,8 +57,6 @@ char getLetterGrade(float userGrade, char* letterGradePath) {
 		if (userGrade >= threshGrade) {
 			return letterGrade;
 		}
-
-
 	}
 
 	return 'F';
@@ -94,17 +95,24 @@ int startTest(struct ParsedConfig* lptr) {
 	printf("\n\nGrade %f\n", grade);
 
 	//Tell user what words to review
-	if (wrongCount == 0) {
-		return grade;	
+	if (wrongCount > 0) {
+		printf("\n\nReview the following\n");
+
+		for (int i=0; i<wrongCount; i++) {
+			printf("%d: %s", i+1, wrongWords[i]);
+		}
 	}
 
-	printf("\n\nReview the following\n");
+	
 
-	for (int i=0; i<wrongCount; i++) {
-		printf("%d: %s", i+1, wrongWords[i]);
-	}
+	char letterGrade = getLetterGrade(grade, "letter-grades.cfg");
 
-	saveResults(wrongWords, correctCount, wrongCount, lptr->count, grade);
+	if (letterGrade == '\0') {
+		printf("Error reading letter grade config file!\nFalling back to X\n");
+		letterGrade = 'X';
+	}	
+
+	saveResults(wrongWords, correctCount, wrongCount, lptr->count, grade, letterGrade);
 
 	return grade;
 
@@ -118,9 +126,7 @@ int main() {
 
 	struct ParsedConfig* lesson = parseConfig(lessonPath);
 
-	char letterGrade = getLetterGrade(80, "letter-grades.cfg");
 
-	printf("%c\n", letterGrade); 
 
 
 	//if strcmp(getConfigValue("lesson.txt", cfgptr), ")

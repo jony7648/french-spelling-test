@@ -101,27 +101,26 @@ struct Lesson* getLessonData(char* filePath) {
 	return lptr;
 }
 
-void saveResults(char wrongWords[100][50], int correctCount, int wrongCount, int totalCount, double score) {
+void saveResults(char wrongWords[100][50], int correctCount, int wrongCount, int totalCount, double grade, char gradeLetter) {
 	FILE* fptr;
 
 	time_t currentTime = time(NULL);
-	char gradeLetter = 'A';
 
 	char* outputPath = "previous-tests.txt";
 
 	fptr = fopen(outputPath, "a");
 
 	if (fptr == NULL) {
-		printf("File not found!\n");
+		printf("File \" %s \" not found!\n", outputPath);
 		return;
 	}
 
 
-	fprintf(fptr, "\n%sscore %d/%d   Grade %f %c\n", 
+	fprintf(fptr, "\n%sgrade %d/%d   Grade %f %c\n", 
 			ctime(&currentTime), 
 			correctCount, 
 			totalCount,
-			score,
+			grade,
 			gradeLetter
 	);
 

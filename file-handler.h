@@ -8,7 +8,7 @@ struct Lesson {
 };
 
 extern struct Lesson* getLessonData(char* filePath);
-extern void saveResults(char wrongWords[100][50], int correctCount, int wrongCount, int totalCount, double score);
+extern void saveResults(char wrongWords[100][50], int correctCount, int wrongCount, int totalCount, double grade, char gradeLetter);
 
 
 #endif

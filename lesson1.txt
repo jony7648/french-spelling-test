@@ -1,4 +1,6 @@
 friendship: amitié
+To be against (her): contrariée
+Gossip: Des commérages
 United States: Les États-Unis
 to prefer (ils): préfèrent
 respectful (feminine): respectueuse
@@ -12,7 +14,16 @@ to go hiking: faire une randonnée
 To spend time somewhere: faire un séjour
 To go for a bike ride: faire du vélo
 To pack one's bags: faire les valises
-To meet someone for the first time: faire la connaissance de
+To meet someone for the first time: faire la connaissance
 To make plans: faire des projets
 To wait in line: faire la queue
 You are not patient (tu): tu n'es pas patient
+
+
+
+
+
+
+
+
+
