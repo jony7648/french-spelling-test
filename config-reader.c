@@ -152,21 +152,17 @@ struct ParsedConfig* parseConfig(char* path) {
 		int index = i - indexOffset;
 
 		int result = parseLine(lineArr[i], cfgptr->keyArr[index], cfgptr->valueArr[index]);
-		printf("%s", lineArr[i]);
 		
 		//printf("%d\n", result);
 		//if we find an empty line
 		
 		if (result == 1) {
-			printf("yes")
-				/*
 			indexOffset++;
-			cfgptr->count--;
 			continue;
-			*/
 		}
-		
 	}
+
+	cfgptr->count -= indexOffset;
 
 	fclose(fptr);
 

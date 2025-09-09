@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <strings.h>
 #include <stdbool.h>
+#include <locale.h>
+#include <ctype.h>
 #include "file-handler.h"
 #include "config-reader.h"
 
@@ -62,6 +64,12 @@ char getLetterGrade(float userGrade, char* letterConfigPath) {
 	return 'F';
 }
 
+void lowerCaseWord(char *word) {
+	for (int i=0; i<strlen(word); i++) {
+		word[i] = tolower(word[i]);
+	}
+}
+
 int startTest(struct ParsedConfig* lptr) {
 	float grade = 5.0f;
 
@@ -72,9 +80,13 @@ int startTest(struct ParsedConfig* lptr) {
 
 	int wrongCount = 0;
 
+	printf("\n\n\n");
+
 	for (int i=0; i<lptr->count; i++) {
 		char* engWord = lptr->keyArr[i];
 		char* frenWord = lptr->valueArr[i];
+
+		lowerCaseWord(frenWord);
 
 		bool correct = promptWord(engWord, frenWord);
 
@@ -122,11 +134,12 @@ int startTest(struct ParsedConfig* lptr) {
 int main() {
 	struct ParsedConfig* cfgptr = parseConfig("config.cfg");
 
-	char* lessonPath = getConfigValue("lesson", cfgptr);
+	char *lessonPath = getConfigValue("lesson", cfgptr);
 
 	struct ParsedConfig* lesson = parseConfig(lessonPath);
 
 
+	//setlocale(LC_ALL, "fr-FR");
 
 
 	//if strcmp(getConfigValue("lesson.txt", cfgptr), ")
