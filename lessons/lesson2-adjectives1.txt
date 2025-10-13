@@ -1,0 +1,34 @@
+White (masculin): blanc
+White (feminine): blanche
+Cruel (masculin): cruel
+Cruel (feminine): cruelle
+Ancient (masculin): ancien
+Ancient (feminine): ancienne
+Expensive (masculin): cher
+Expensive (feminine): chère
+Complete (masculin): complet
+Complete (feminine): complète
+Mute (masculin): muet
+Mute (feminine): muette
+Active (masculin): actif
+Active (feminine): active
+Low (like en ___) (masculin): bas
+Low (like en ___) (feminine): basse
+Dangerous (masculin): dangereux
+Dangerous (feminine): dangereuse
+Frank (masculin): franc
+Frank (feminine): franche
+New (masculin): nouveau
+New (masculin before vowel): nouvel
+New (feminine): nouvelle
+Canadien (masculin): canadien
+Canadien (feminine): canadienne
+Proud (masculin): fier
+Proud (feminine): fière
+worried (masculin): Inquiet
+worried (feminine): Inquiète
+naive (masculin): naïf
+naive (feminine): naïve
+Daily (masculin): quotidien
+Daily (feminine): quotidienne
+

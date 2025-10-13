@@ -5,9 +5,9 @@
 #include <locale.h>
 #include <ctype.h>
 #include "file-handler.h"
-#include "config-reader.h"
+#include "libraries/config_reader.h"
 
-bool promptWord(char* engWord, char frenWord[20]) {
+bool promptWord(char *engWord, char *frenWord) {
 	char userBuffer[100];
 	userBuffer[99] = '\0';
 
@@ -16,13 +16,13 @@ bool promptWord(char* engWord, char frenWord[20]) {
 	printf("English: %s\n\nFrench: ", engWord);
 
 	if (fgets(userBuffer, maxUserLen, stdin) != NULL) {
+		//prevent the skiping of iterations
 		int len = strlen(userBuffer);	
 
 		if (len > 0 && userBuffer[len - 1] != '\n') {
 			int ch;
             while ((ch = getchar()) != '\n' && ch != EOF);
 			frenWord[len - 1] = '\0';
-
 		}
 	}
 
@@ -45,20 +45,31 @@ float calculateGrade(int correctCount, int questionCount) {
 }
 
 char getLetterGrade(float userGrade, char* letterConfigPath) {
-	struct ParsedConfig* defPtr = parseConfig(letterConfigPath);
+	Node *defNode = parseConfig(letterConfigPath);
+	Node *currentNode;
 
-	if (defPtr == NULL) {
+	if (defNode == NULL) {
 		return '\0';
 	}
 
+	currentNode = getChildNode(getArrNode(defNode, "default"));
 
-	for (int i=0; i<defPtr->count; i++) {
-		char letterGrade = defPtr->keyArr[i][0];
-		int threshGrade = atoi(defPtr->valueArr[i]);
+
+	// change this part
+	
+
+	while (currentNode != NULL) {
+		Node *scoreNode = getChildNode(currentNode);
+
+		char *keyValue = (char*)getNodeValue(currentNode);
+		char letterGrade = keyValue[0];
+		int threshGrade = atoi((char*)getNodeValue(scoreNode));
 
 		if (userGrade >= threshGrade) {
 			return letterGrade;
 		}
+
+		currentNode = getChildNode(scoreNode);
 	}
 
 	return 'F';
@@ -70,21 +81,32 @@ void lowerCaseWord(char *word) {
 	}
 }
 
-int startTest(struct ParsedConfig* lptr) {
+int startTest(Node *lessonNode) {
+
+	Node* currentNode;
+	
 	float grade = 5.0f;
 
 	char wrongWords[100][50];
 	int wrongWordsLen = 100;
 
+	int wordCount = getCfgValueCount(lessonNode, "default");
+
 	int correctCount = 0;
 
 	int wrongCount = 0;
 
+
 	printf("\n\n\n");
 
-	for (int i=0; i<lptr->count; i++) {
-		char* engWord = lptr->keyArr[i];
-		char* frenWord = lptr->valueArr[i];
+	currentNode = getChildNode(getArrNode(lessonNode, "default"));
+	currentNode = getChildNode(lessonNode->nodeArr[0]);
+
+	//start test
+	while (currentNode != NULL) {
+		Node *frenNode = getChildNode(currentNode);
+		char *engWord = (char*)getNodeValue(currentNode);
+		char *frenWord = (char*)getNodeValue(frenNode);
 
 		lowerCaseWord(frenWord);
 
@@ -100,9 +122,12 @@ int startTest(struct ParsedConfig* lptr) {
 			strcpy(wrongWords[wrongCount], frenWord);
 			wrongCount++;	
 		}
+
+		currentNode = getChildNode(frenNode);
 	}
 
-	grade = calculateGrade(correctCount, lptr->count);
+	//calculate grade
+	grade = calculateGrade(correctCount, wordCount);
 
 	printf("\n\nGrade %f\n", grade);
 
@@ -115,8 +140,6 @@ int startTest(struct ParsedConfig* lptr) {
 		}
 	}
 
-	
-
 	char letterGrade = getLetterGrade(grade, "letter-grades.cfg");
 
 	if (letterGrade == '\0') {
@@ -124,34 +147,33 @@ int startTest(struct ParsedConfig* lptr) {
 		letterGrade = 'X';
 	}	
 
-	saveResults(wrongWords, correctCount, wrongCount, lptr->count, grade, letterGrade);
+	saveResults(wrongWords, correctCount, wrongCount, wordCount, grade, letterGrade);
 
 	return grade;
-
 
 }
 
 int main() {
-	struct ParsedConfig* cfgptr = parseConfig("config.cfg");
+	setlocale(LC_ALL, "fr-FR");
 
-	char *lessonPath = getConfigValue("lesson", cfgptr);
+	Node *cfgNode;
+	Node *lessonNode;
+	char *lessonPath;
 
-	struct ParsedConfig* lesson = parseConfig(lessonPath);
+	cfgNode = parseConfig("config.cfg");
 
+	lessonPath = (char*) getCfgValue(cfgNode, NULL, "lesson");
 
-	//setlocale(LC_ALL, "fr-FR");
-
-
-	//if strcmp(getConfigValue("lesson.txt", cfgptr), ")
-	
-	//free(cfgptr);
-	startTest(lesson);
-
-	free(lesson);
+	lessonNode = parseConfig(lessonPath);
 
 
+	if (lessonNode == NULL) {
+		printf("ERROR lesson file failed to read!!\n");
+		return 1;
+	}
 
+	startTest(lessonNode);
 
-
+	freeNodeTree(lessonNode);
 	return 0;
 }
