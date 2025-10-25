@@ -6,7 +6,7 @@
 Node *newNode(char type, int size) {
 	Node* p;
 
-	p = (struct childNode*) malloc(sizeof(Node));
+	p = (Node*) malloc(sizeof(Node));
 
 	p->parent = NULL;
 	p->child = NULL;
@@ -23,7 +23,7 @@ Node *newNode(char type, int size) {
 			p->strValue[size-1] = '\0';
 			break;
 		case 'N':
-			p->nodeArr = (Node*) malloc(sizeof(Node) * size);
+			p->nodeArr = malloc(sizeof(Node) * size);
 	}
 
 	return p;

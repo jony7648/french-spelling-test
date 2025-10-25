@@ -10,7 +10,7 @@ typedef struct {
 	int count;
 } ParsedConfig;
 
-extern ParsedConfig* parseConfig(char* path);
+extern Node *parseConfig(char* path);
 extern char *getCfgValue(Node *cfgNode, char *targetCategory, char *targetKey);
 extern int getCfgValueCount(Node *cfgNode, char* targetCategory);
 

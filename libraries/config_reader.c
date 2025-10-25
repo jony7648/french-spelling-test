@@ -14,7 +14,7 @@ int isVisibleChar(char test) {
 	return 1;
 }
 
-Node *parseLine(char* line, Node* nodeContainer, Node* currentCategoryNode, int *retStatus) {
+Node *parseLine(char *line, Node *nodeContainer, Node *currentCategoryNode, int *retStatus) {
 	char keyBuffer[100]; 
 	char valueBuffer[100];
 
@@ -133,8 +133,8 @@ ParsedConfig* newParsedConfig() {
 
 //Create a parse config function that can also parse categories
 
-ParsedConfig* parseConfig(char* path) {
-	FILE* fptr;
+Node *parseConfig(char* path) {
+	FILE *fptr;
 
 	fptr = fopen(path, "r");
 

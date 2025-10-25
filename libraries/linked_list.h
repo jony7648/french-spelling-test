@@ -3,18 +3,19 @@
 
 #define DEFAULT_NODE "default"
 
-typedef struct {
+typedef struct Node Node;
+struct Node {
 	void *parent;
 	void *child;
 	char type;
 	int intValue;
 	char charValue;
 	char *strValue;
-	void **nodeArr;
+	Node **nodeArr;
 	int arrLinked;
 	int size;
 	int nodeCount;
-} Node;
+};
 
 extern Node *newNode(char type, int size);
 extern Node *newStringNode(char *value);
