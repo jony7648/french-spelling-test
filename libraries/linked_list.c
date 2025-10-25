@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <strings.h>
+#include <string.h>
 #include "linked_list.h"
-
 
 Node *newNode(char type, int size) {
 	Node* p;
@@ -15,6 +14,7 @@ Node *newNode(char type, int size) {
 	p->type = type;
 	p->size = size;
 	p->nodeCount = 0;
+	p->arrLinked = 0;
 
 
 	switch (type) {
@@ -87,18 +87,43 @@ int freeNode(Node *node) {
 		return 1;
 	}
 
+	Node *parent = node->parent;
+	Node *child = node->child;
+
+	//clear parent node as well if has one
+	//
+	
+	//printf("%p\n", node);
+	
+	if (parent != NULL) {
+		if (child != NULL) {
+			child->parent = node->parent;
+		}
+		else {
+			parent->child = NULL;
+		}
+
+	}
+	else if (child != NULL) {
+		child->parent = NULL;
+	}
+
+
 	if (node->strValue != NULL) {
 		free(node->strValue);
+		node->strValue = NULL;
 	}
 
 
 	free(node);
+	
+	node = NULL;
+
 	return 0;
 }
 
 int freeNodeTree(Node *root) {
-	//printf("Pack: %s %p\n", root->strValue, root);
-
+	//printf("%p\n", root->child);
 	if (root == NULL) {
 		return 1;
 	}
@@ -112,29 +137,35 @@ int freeNodeTree(Node *root) {
 	Node *child = NULL;
 
 	for (int i=0; i<root->nodeCount; i++) {
-		Node* category = root->nodeArr[i];
+		Node *category = root->nodeArr[i];
 
 		freeNodeTree(root->nodeArr[i]);
-	}
 
-	while (parent != NULL) {
-		child = parent->child;
-
-
-		freeNode(parent);
-		//printf("Freed: %s\n", parent->strValue);
-
-		parent = child;
-
-
-		if (child == NULL) {
+		if (root->arrLinked == 1) {
 			break;
 		}
 
 	}
 
+	//printf("%p\n", root);
+	while (parent != NULL) {
+		child = parent->child;
+
+		//printf("%s\n", (char*)getNodeValue(child));
+		
+		freeNode(parent);
+
+
+		parent = child;
+
+		if (child == NULL) {
+			break;
+		}
+	}
+
 
 	//printf("Freed Pack: %s %p\n", root->strValue, root);
+	root->child = NULL;
 	freeNode(root);
 
 	return 0;
@@ -172,8 +203,12 @@ Node *getChildNode(Node *parent) {
 
 
 Node *getArrNode(Node *parent, char *nodeValue) {
-	if (parent == NULL || nodeValue == NULL) {
+	if (parent == NULL) {
 		return NULL;
+	}
+	
+	if (nodeValue == NULL) {
+		nodeValue = DEFAULT_NODE;		
 	}
 
 	Node *child;
@@ -237,6 +272,41 @@ Node *getArrNodeFromStr(Node *parent, char *str) {
 			return child;
 		}
 	}
+
+	return NULL;
+}
+
+int linkNodeArrs(Node *arrHolder) {
+	if (arrHolder->type != 'N') {
+		return 1;
+	}
+
+	Node *currentNode = NULL;
+
+
+	for (int i=0; i<arrHolder->nodeCount; i++) {
+		//printf("%d\n", i);
+		if (currentNode != NULL) {
+			//printf("%s\n", (char*)getNodeValue(currentNode));
+		}
+
+		if (i - 1 >= 0) {
+			//currentNode = getChildNode(arrHolder->nodeArr[i]);
+			//printf("%d\n", i);
+			assignNodeChild(currentNode, getChildNode(arrHolder->nodeArr[i]));
+		}
+
+		currentNode = getChildNode(arrHolder->nodeArr[i]);
+
+		while (currentNode->child != NULL) {
+			currentNode = currentNode->child;
+		}
+	}
+
+	arrHolder->arrLinked = 1;
+
+	return 0;
+
 }
 
 int appendToNodeArr(Node *parent, Node* node) {
@@ -245,51 +315,7 @@ int appendToNodeArr(Node *parent, Node* node) {
 	}
 
 
+	node->parent = parent;
 	parent->nodeArr[parent->nodeCount] = (void*)node;
 	parent->nodeCount = parent->nodeCount + 1;
 }
-
-/*
-Node **linkList(int* valueList, int count) {
-	Node **linkedList;
-
-	linkedList = (Node*) malloc(sizeof(Node*) * count);
-
-	for (int i=0; i<count; i++) {
-		Node *child = newNode();
-
-
-		child->value = valueList[i];
-		linkedList[i] = child;
-
-		if (i == 0) {
-			continue;	
-		}
-
-		Node *parent = linkedList[i - 1];
-
-		assignNodeChild(parent, child);
-	}
-
-	return linkedList;
-}
-*/
-/*
-int main() {
-	Node *parent = newNode();
-	Node *child = newNode();
-	Node *child2 = newNode();
-
-	parent->value = 3;
-	child->value = 5;
-	child2->value = 81;
-	assignNodeChild(parent, child);
-	assignNodeChild(child, child2);
-	printf("%p\n", child2->value);
-
-	removeNodeTree(parent);
-
-	int list[3] = {9,80,3};
-	Node** linkedList = linkList(list, 3);
-}
-*/

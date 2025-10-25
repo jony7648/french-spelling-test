@@ -1,6 +1,8 @@
 #ifndef LINKED_LIST_H
 #define LINKED_LIST_H
 
+#define DEFAULT_NODE "default"
+
 typedef struct {
 	void *parent;
 	void *child;
@@ -9,6 +11,7 @@ typedef struct {
 	char charValue;
 	char *strValue;
 	void **nodeArr;
+	int arrLinked;
 	int size;
 	int nodeCount;
 } Node;
@@ -21,6 +24,7 @@ extern void assignNodeChain(Node *root, Node *child);
 extern void *getNodeValue(Node *node);
 extern Node *getChildNode(Node *parent);
 extern Node *getArrNode(Node *parent, char *nodeValue);
+extern int linkNodeArrs(Node *arrHolder);
 extern void *getChildValue(Node *parent);
 extern int freeNode(Node *node);
 extern int freeNodeTree(Node *node);

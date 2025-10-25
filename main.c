@@ -1,29 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <strings.h>
+#include <string.h>
 #include <stdbool.h>
 #include <locale.h>
 #include <ctype.h>
+#include "functions.h"
 #include "file-handler.h"
 #include "libraries/config_reader.h"
 
-bool promptWord(char *engWord, char *frenWord) {
+bool promptWord(char *engWord, char *frenWord, char *langauge) {
 	char userBuffer[100];
 	userBuffer[99] = '\0';
 
 	int maxUserLen = 100;
 
-	printf("English: %s\n\nFrench: ", engWord);
+	printf("English: %s\n\n%s: ", engWord, langauge);
 
 	if (fgets(userBuffer, maxUserLen, stdin) != NULL) {
 		//prevent the skiping of iterations
-		int len = strlen(userBuffer);	
-
-		if (len > 0 && userBuffer[len - 1] != '\n') {
-			int ch;
-            while ((ch = getchar()) != '\n' && ch != EOF);
-			frenWord[len - 1] = '\0';
-		}
+		preventIterSkip(userBuffer);
 	}
 
 	strcat(frenWord, "\n");
@@ -38,7 +33,7 @@ bool promptWord(char *engWord, char *frenWord) {
 
 float calculateGrade(int correctCount, int questionCount) {
 	float grade;
-	
+
 	grade = (float)correctCount/ (float)questionCount * 100;
 
 	return grade;
@@ -52,11 +47,11 @@ char getLetterGrade(float userGrade, char* letterConfigPath) {
 		return '\0';
 	}
 
-	currentNode = getChildNode(getArrNode(defNode, "default"));
+	currentNode = getChildNode(getArrNode(defNode, DEFAULT_NODE));
 
 
 	// change this part
-	
+
 
 	while (currentNode != NULL) {
 		Node *scoreNode = getChildNode(currentNode);
@@ -81,23 +76,31 @@ void lowerCaseWord(char *word) {
 	}
 }
 
-int startTest(Node *lessonNode) {
-
+int startTest(Node *lessonNode, TestCfg *testCfg) {
+	char *FALLBACK_LANGAUGE = "N/A";
 	Node* currentNode;
-	
+
 	float grade = 5.0f;
 
 	char wrongWords[100][50];
 	int wrongWordsLen = 100;
 
-	int wordCount = getCfgValueCount(lessonNode, "default");
+	int wordCount = getCfgValueCount(lessonNode, DEFAULT_NODE);
 
 	int correctCount = 0;
-
 	int wrongCount = 0;
 
+	char *languageChoice = testCfg->language;
 
-	printf("\n\n\n");
+	clearScreen();
+
+	//ensure user inputted a valid language
+	if (testCfg->language == NULL || strlen(testCfg->language) < 2) {
+		languageChoice = FALLBACK_LANGAUGE;
+	}
+	else {
+		languageChoice = testCfg->language;
+	}
 
 	currentNode = getChildNode(getArrNode(lessonNode, "default"));
 	currentNode = getChildNode(lessonNode->nodeArr[0]);
@@ -110,7 +113,7 @@ int startTest(Node *lessonNode) {
 
 		lowerCaseWord(frenWord);
 
-		bool correct = promptWord(engWord, frenWord);
+		bool correct = promptWord(engWord, frenWord, languageChoice);
 
 		if (correct == true) {
 			correctCount++;
@@ -156,24 +159,30 @@ int startTest(Node *lessonNode) {
 int main() {
 	setlocale(LC_ALL, "fr-FR");
 
+	TestCfg *testCfg = newTestCfg();
 	Node *cfgNode;
 	Node *lessonNode;
 	char *lessonPath;
+	char *languageChoice;
 
 	cfgNode = parseConfig("config.cfg");
 
-	lessonPath = (char*) getCfgValue(cfgNode, NULL, "lesson");
+	lessonPath = chooseLessonFile("./lessons");
+
+	testCfg->lessonPath = (char*) getCfgValue(cfgNode, NULL, "lesson");
+	testCfg->language = (char*) getCfgValue(cfgNode, NULL, "Language");
 
 	lessonNode = parseConfig(lessonPath);
 
-
 	if (lessonNode == NULL) {
 		printf("ERROR lesson file failed to read!!\n");
+		free(testCfg);
 		return 1;
 	}
 
-	startTest(lessonNode);
+	startTest(lessonNode, testCfg);
 
+	free(testCfg);
 	freeNodeTree(lessonNode);
 	return 0;
 }
