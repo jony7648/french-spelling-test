@@ -181,10 +181,10 @@ void *getNodeValue(Node *node) {
 			return (void*) node->strValue;
 			break;
 		case 'I':
-			return (void*) node->intValue;
+			return (void*) &node->intValue;
 			break;
 		case 'C':
-			return (void*) node->charValue;
+			return (void*) &node->charValue;
 			break;
 	}
 
